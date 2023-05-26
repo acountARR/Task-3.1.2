@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit user</title>
+</head>
+<body>
+<div>
+    <form th:method="POST" th:action="@{/user/edit/{id}(id=${user.getId()})}" th:object="${user}" method="post">
+        <fieldset>
+            <legend>User data</legend>
+            <p>
+                <label th:for="username">Login
+                    <input type="text" th:field="*{username}" id="username" th:value="${user.getUsername()}">
+                </label>
+                <br/>
+                <label th:for="lastname">Lastname
+                    <input type="text" th:field="*{lastName}" id="lastName" th:value="${user.getLastName()}">
+                </label>
+                <br/>
+                <label th:for="email">Email
+                    <input type="text" th:field="*{email}" id="email" th:value="${user.getEmail()}">
+                </label>
+                <br/>
+                <label th:for="age">Age
+                    <input type="text" th:field="*{age}" id="age" th:value="${user.getAge()}">
+                </label>
+                <br/>
+                <label th:for="password">Password
+                    <input type="text" th:field="*{password}" id="password" th:value="${user.getPassword()}">
+                </label>
+                <br/>
+            </p>
+            <button type="submit">Изменить данные</button>
+        </fieldset>
+    </form>
+    <br/>
+</div>
+<a href="/logout">Logout</a>
+</body>
+</html>
