@@ -2,6 +2,8 @@ package ru.itmentor.spring.boot_security.demo.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -10,42 +12,47 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.itmentor.spring.boot_security.demo.model.Role;
 import ru.itmentor.spring.boot_security.demo.model.User;
-import ru.itmentor.spring.boot_security.demo.repository.RoleRepository;
 import ru.itmentor.spring.boot_security.demo.repository.UserRepository;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class UserService implements UserDetailsService {
 
-    @PersistenceContext
-    private EntityManager em;
-
-    UserRepository userRepository;
-    RoleRepository roleRepository;
-
-    BCryptPasswordEncoder bCryptPasswordEncoder;
+    private UserRepository userRepository;
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
-    public UserService(UserRepository userRepository, RoleRepository roleRepository, @Lazy BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public UserService(UserRepository userRepository, @Lazy BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username);
-        if (user == null) throw new UsernameNotFoundException("User not found");
-
-        return user;
+        User user = userRepository.findByEmail(username);
+        List<GrantedAuthority> authorities = getUserAuthority(user.getRoles());
+        return buildUserForAuthentication(user, authorities);
     }
 
-    public User findUserById(int userId) {
+    private List<GrantedAuthority> getUserAuthority(Set<Role> userRoles) {
+        Set<GrantedAuthority> roles = new HashSet<GrantedAuthority>();
+        for (Role role : userRoles) {
+            roles.add(new SimpleGrantedAuthority(role.getName()));
+        }
+        List<GrantedAuthority> grantedAuthorities = new ArrayList<>(roles);
+        return grantedAuthorities;
+    }
+
+    private UserDetails buildUserForAuthentication(User user, List<GrantedAuthority> authorities) {
+        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(),
+                true, true, true, true, authorities);
+    }
+
+    public User loadUserByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
+    public User loadUserById(int userId) {
         Optional<User> userFromDb = userRepository.findById(userId);
         return userFromDb.orElse(new User());
     }
@@ -59,7 +66,6 @@ public class UserService implements UserDetailsService {
         if (userFromDB != null) {
             return false;
         }
-
         user.setRoles(Collections.singleton(new Role(2, "ROLE_USER")));
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         userRepository.save(user);
@@ -67,15 +73,15 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public boolean updateUser(User updateUser) {
-        Optional<User> userFormDB = userRepository.findById(updateUser.getId());
+    public void updateUser(int id, User user) {
+        User userToUpdate = userRepository.getById(id);
+        userToUpdate.setUsername(user.getUsername());
+        userToUpdate.setLastName(user.getLastName());
+        userToUpdate.setEmail(user.getEmail());
+        userToUpdate.setAge(user.getAge());
+        userToUpdate.setRoles(user.getRoles());
+        userRepository.save(userToUpdate);
 
-        if (userFormDB == null) {
-            return false;
-        }
-
-        userRepository.save(updateUser);
-        return true;
     }
 
     public boolean deleteUser(int userId) {
@@ -86,10 +92,7 @@ public class UserService implements UserDetailsService {
         return false;
     }
 
-    public List<User> userGetList(int idMin) {
-        return em.createQuery("SELECT u FROM User u WHERE u.id > :paramId", User.class)
-                .setParameter("paramId", idMin).getResultList();
-    }
+
 
 
 }

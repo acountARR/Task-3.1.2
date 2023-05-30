@@ -1,33 +1,39 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <title>User page</title>
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <style>.top-buffer {
+        margin-top: 15px;
+    }</style>
 </head>
 <body>
-<div>
-    <table>
-        <thead>
-        <tr>
-            <th>Id</th>
-            <th>Name user</th>
-            <th>Lastname</th>
-            <th>Age</th>
-            <th>Email</th>
-            <th>Role</th>
-        </tr>
-        <td th:text="${user.getId()}">Id</td>
-        <td th:text="${user.getUsername()}">Name user</td>
-        <td th:text="${user.getLastName()}">Lastname</td>
-        <td th:text="${user.getAge()}">Age</td>
-        <td th:text="${user.getEmail()}">Email</td>
-        <td th:text="${user.getRoles()}">Role</td>
-        </tbody>
-    </table>
-    <form th:action="@{/user/editUser/{id}(id=${user.getId()})}">
-        <button type="submit">Edit User</button>
-    </form>
+<header th:replace="fragments/header :: header"/>
+<div class="container-fluid">
+
+    <div class="row">
+        <div class="col bg-white px-0">
+            <div class="row top-buffer"></div>
+            <div class="nav flex-column nav-pills " id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                <button class="nav-link active text-start" id="v-pills-user-tab" data-bs-toggle="pill"
+                        data-bs-target="#v-pills-user"
+                        type="button" role="tab" aria-controls="v-pills-user" aria-selected="true">User
+                </button>
+            </div>
+        </div>
+        <div class="col-10 vh-100 bg-light">
+            <div class="row top-buffer"></div>
+            <div class="tab-content" id="v-pills-tabContent">
+                <div class="tab-pane fade show active" id="v-pills-user" role="tabpanel"
+                     aria-labelledby="v-pills-user-tab">
+
+                    <div th:replace="fragments/userInfo :: userInfo"/>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-<a href="/logout">Logout</a>
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>
