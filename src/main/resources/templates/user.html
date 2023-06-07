@@ -14,7 +14,7 @@
 
     <div class="row">
         <div class="col bg-white px-0">
-            <div class="row top-buffer"></div>
+            <!--<div class="row top-buffer"></div>-->
             <div class="nav flex-column nav-pills " id="v-pills-tab" role="tablist" aria-orientation="vertical">
                 <button class="nav-link active text-start" id="v-pills-user-tab" data-bs-toggle="pill"
                         data-bs-target="#v-pills-user"
@@ -23,17 +23,26 @@
             </div>
         </div>
         <div class="col-10 vh-100 bg-light">
-            <div class="row top-buffer"></div>
+            <!--<div class="row top-buffer"></div>-->
             <div class="tab-content" id="v-pills-tabContent">
                 <div class="tab-pane fade show active" id="v-pills-user" role="tabpanel"
                      aria-labelledby="v-pills-user-tab">
-
                     <div th:replace="fragments/userInfo :: userInfo"/>
                 </div>
             </div>
         </div>
     </div>
 </div>
+</script>
 <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/js/user.js}"></script>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    let userId = /*[[${user.id}]]*/ 'boo'
+    /*]]*/
+</script>
+<script>
+    fillPrincipalTable()
+</script>
 </body>
 </html>

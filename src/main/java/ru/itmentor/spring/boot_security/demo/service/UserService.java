@@ -61,26 +61,21 @@ public class UserService implements UserDetailsService {
         return userRepository.findAll();
     }
 
-    public boolean saveUser(User user) {
-        User userFromDB = userRepository.findByUsername(user.getUsername());
-        if (userFromDB != null) {
-            return false;
-        }
+    public void saveUser(User user) {
         user.setRoles(Collections.singleton(new Role(2, "ROLE_USER")));
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         userRepository.save(user);
-        return true;
     }
 
     @Transactional
-    public void updateUser(int id, User user) {
-        User userToUpdate = userRepository.getById(id);
+    public void updateUser(User user) {
+/*        User userToUpdate = userRepository.getById(id);
         userToUpdate.setUsername(user.getUsername());
         userToUpdate.setLastName(user.getLastName());
         userToUpdate.setEmail(user.getEmail());
         userToUpdate.setAge(user.getAge());
-        userToUpdate.setRoles(user.getRoles());
-        userRepository.save(userToUpdate);
+        userToUpdate.setRoles(user.getRoles());*/
+        userRepository.save(user);
 
     }
 
@@ -91,8 +86,6 @@ public class UserService implements UserDetailsService {
         }
         return false;
     }
-
-
 
 
 }
