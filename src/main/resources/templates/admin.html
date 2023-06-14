@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin page</title>
+</head>
+<body>
+<table>
+    <thead>
+    <tr>
+        <th>Id</th>
+        <th>Name user</th>
+        <th>Lastname</th>
+        <th>Age</th>
+        <th>Email</th>
+        <th>Role</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="user : ${Users}">
+        <td th:text="${user.getId()}">Id</td>
+        <td th:text="${user.getUsername()}">Name user</td>
+        <td th:text="${user.getLastName()}">Lastname</td>
+        <td th:text="${user.getAge()}">Age</td>
+        <td th:text="${user.getEmail()}">Email</td>
+        <td th:text="${user.getRoles()}">Role</td>
+
+        <td>
+            <form th:action="@{/admin/edit/{id}(id=${user.getId()})}" th:object="${user}">
+                <button type="submit">Изменить</button>
+            </form>
+        </td>
+        <td>
+            <form th:action="@{/admin/delete/{id}(id=${user.getId()})}" th:object="${user}">
+                <button type="submit">Удалить</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<a href="/logout">Logout</a>
+</body>
+</html>
